@@ -78,9 +78,10 @@ using namespace std;
 */ 
 
 vector<int> integers_data = { 1, 20, 3, 40, 5 , -9};
+char user_options[] = { 'P', 'A', 'M', 'S', 'L', 'Q' };
 
 char user_prompt();
-void menu_options();
+void menu_options(char user_value);
 void print_numbers();
 void add_integer_to_list();
 void calculate_mean();
@@ -90,16 +91,15 @@ void invalid_entry();
 
 int main()
 {
-	menu_options();
+	char user_option_value = user_prompt(); 
+	menu_options(user_option_value);
 
 	return 0;
 };
 
-void menu_options()
+void menu_options(char user_vaule)
 {
-	char user_choice = user_prompt();
-
-	switch (user_choice)
+	switch (user_vaule)
 	{
 	case 'P':
 	{
@@ -132,11 +132,7 @@ void menu_options()
 		break;
 	}
 	default:
-		cout << "No, " << user_choice << "is not in the list" << endl;
-		// TODO: 
-		// 1. prompt user again
-		// 2. give user 3 chances max - if 3 failed attempts then terminate the program
-		invalid_entry(); //TODO: issue here, can't enter back into the menu options when 1 or more wrong entry made
+		cout << "";
 		break;
 	}
 };
@@ -153,10 +149,50 @@ char user_prompt()
 	char user_choice;
 	cin >> user_choice;
 
-	char user_choice_captialized = toupper(user_choice);
+	char user_choice_uppercase = toupper(user_choice);
+	bool located_user_choice{ false };
+	int invalid_entry_count{ 1 };
 
-	return user_choice_captialized;
-}
+	for (int i = 0; i < 6; i++)
+	{
+		if (user_choice_uppercase == user_options[i])
+		{
+			located_user_choice = true;
+			break;
+		}
+	};
+
+	if (!located_user_choice)
+	{
+		do {
+			invalid_entry_count++;
+
+			cout << "Invalid entry, please try again." << endl;
+			cout << "Valid entries are: p, a, m, s, l, q" << endl;
+
+			cin >> user_choice;
+			user_choice_uppercase = toupper(user_choice);
+
+			for (int i = 0; i < 6; i++)
+			{
+				if (user_choice_uppercase == user_options[i])
+				{
+					located_user_choice = true;
+					break;
+				}
+			}
+			
+		} while (invalid_entry_count < 3);
+	}
+
+	if (!located_user_choice)
+	{
+		cout << "You have exceeded the number of invalid entries, program terminated.";
+		exit(0);
+	}
+
+	return user_choice_uppercase;
+};
 void print_numbers()
 {
 	string print_data{ "[ " };
@@ -242,16 +278,6 @@ void smallest_number() {
 void invalid_entry()
 {
 	int error_count{ 0 };
-
-	while (error_count < 3)
-	{
-		cout << error_count << ", error" << endl;
-
-		char user_value = user_prompt();
-
-		error_count++;
-
-	};
 
 	cout << "You have exceeded the amount of wrong entries, program will not terminate";
 	
